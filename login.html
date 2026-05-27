@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Link Server</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradient 3s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        /* Special padding for password field to accommodate toggle button */
+        .form-control[type="password"],
+        .form-control[type="text"].password-field {
+            padding-right: 50px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Fix icon color change on focus */
+        .input-wrapper:focus-within .fas:not(.password-toggle) {
+            color: #667eea;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            font-size: 16px;
+            transition: color 0.3s ease;
+            z-index: 10;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .password-toggle:hover {
+            color: #667eea;
+        }
+
+        .password-toggle:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-loading {
+            display: none;
+            margin-right: 10px;
+        }
+
+        .btn-loading.show {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert-error {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .remember-me label {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 10px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .security-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .security-info i {
+            color: #28a745;
+            margin-right: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .logo h1 {
+                font-size: 24px;
+            }
+
+            .form-control {
+                padding: 12px 12px 12px 40px;
+                font-size: 14px;
+            }
+
+            .login-btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+
+        /* Animation for form appearance */
+        .login-container {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <h1>Admin Login</h1>
+            <p>Link Server Dashboard Access</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                    <i class="fas fa-lock"></i>
+                    <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+                </div>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <label for="rememberMe">Remember me for 30 days</label>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <i class="fas fa-spinner btn-loading" id="btnLoading"></i>
+                <span id="btnText">Sign In</span>
+            </button>
+        </form>
+
+        <div class="security-info">
+            <i class="fas fa-lock"></i>
+            Your connection is secured with SSL encryption
+        </div>
+
+        <div class="footer-links">
+            <a href="/">← Back to Home</a>
+            <a href="/health">System Status</a>
+        </div>
+    </div>
+
+    <script>
+        class LoginManager {
+            constructor() {
+                this.form = document.getElementById('loginForm');
+                this.usernameInput = document.getElementById('username');
+                this.passwordInput = document.getElementById('password');
+                this.rememberMeCheckbox = document.getElementById('rememberMe');
+                this.loginBtn = document.getElementById('loginBtn');
+                this.btnText = document.getElementById('btnText');
+                this.btnLoading = document.getElementById('btnLoading');
+                this.passwordToggle = document.getElementById('passwordToggle');
+                this.alertContainer = document.getElementById('alertContainer');
+
+                this.initializeEventListeners();
+                this.checkExistingAuth();
+            }
+
+            initializeEventListeners() {
+                this.form.addEventListener('submit', (e) => this.handleLogin(e));
+                
+                // Password toggle with improved event handling
+                this.passwordToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.togglePassword();
+                });
+                
+                // Prevent password toggle from interfering with input focus
+                this.passwordToggle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                });
+                
+                // Enter key support
+                this.usernameInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.passwordInput.focus();
+                    }
+                });
+                
+                this.passwordInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.form.requestSubmit();
+                    }
+                });
+
+                // Clear alerts on input
+                [this.usernameInput, this.passwordInput].forEach(input => {
+                    input.addEventListener('input', () => this.clearAlerts());
+                });
+            }
+
+            togglePassword() {
+                const type = this.passwordInput.type === 'password' ? 'text' : 'password';
+                this.passwordInput.type = type;
+                
+                // Add/remove password-field class to maintain proper padding
+                if (type === 'text') {
+                    this.passwordInput.classList.add('password-field');
+                } else {
+                    this.passwordInput.classList.remove('password-field');
+                }
+                
+                // Toggle eye icon
+                this.passwordToggle.classList.toggle('fa-eye');
+                this.passwordToggle.classList.toggle('fa-eye-slash');
+                
+                // Maintain focus on the input field
+                this.passwordInput.focus();
+            }
+
+            showAlert(message, type = 'error') {
+                this.clearAlerts();
+                
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                alert.innerHTML = `
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    ${message}
+                `;
+                
+                this.alertContainer.appendChild(alert);
+                alert.style.display = 'block';
+                
+                // Auto-hide after 5 seconds for non-error messages
+                if (type !== 'error') {
+                    setTimeout(() => this.clearAlerts(), 5000);
+                }
+            }
+
+            clearAlerts() {
+                this.alertContainer.innerHTML = '';
+            }
+
+            setLoading(loading) {
+                this.loginBtn.disabled = loading;
+                
+                if (loading) {
+                    this.btnLoading.classList.add('show');
+                    this.btnText.textContent = 'Signing In...';
+                } else {
+                    this.btnLoading.classList.remove('show');
+                    this.btnText.textContent = 'Sign In';
+                }
+            }
+
+            async handleLogin(e) {
+                e.preventDefault();
+                
+                const username = this.usernameInput.value.trim();
+                const password = this.passwordInput.value;
+                
+                if (!username || !password) {
+                    this.showAlert('Please enter both username and password', 'error');
+                    return;
+                }
+
+                this.setLoading(true);
+                this.clearAlerts();
+
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Server returned non-JSON response. Please check server configuration.');
+                    }
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        // Store token
+                        const expirationTime = this.rememberMeCheckbox.checked ? 
+                            Date.now() + (30 * 24 * 60 * 60 * 1000) : // 30 days
+                            Date.now() + (24 * 60 * 60 * 1000); // 1 day
+
+                        localStorage.setItem('adminToken', data.token);
+                        localStorage.setItem('adminTokenExpiry', expirationTime.toString());
+                        localStorage.setItem('adminUser', JSON.stringify(data.user));
+
+                        this.showAlert('Login successful! Redirecting to dashboard...', 'success');
+                        
+                        // Redirect to dashboard after short delay
+                        setTimeout(() => {
+                            window.location.replace('/dashboard'); // Use replace to prevent back button issues
+                        }, 1000);
+
+                    } else {
+                        // Handle different error types
+                        let errorMessage = data.message || 'Login failed';
+                        
+                        if (response.status === 429) {
+                            errorMessage = data.message || 'Too many login attempts. Please try again later.';
+                        } else if (response.status === 401) {
+                            errorMessage = data.message || 'Invalid username or password';
+                        }
+                        
+                        this.showAlert(errorMessage, 'error');
+                        
+                        // Clear password on error
+                        this.passwordInput.value = '';
+                        this.passwordInput.focus();
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.showAlert('Connection error. Please check your internet connection and try again.', 'error');
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            checkExistingAuth() {
+                const token = localStorage.getItem('adminToken');
+                const expiry = localStorage.getItem('adminTokenExpiry');
+                
+                if (token && expiry && Date.now() < parseInt(expiry)) {
+                    // Check if token is still valid
+                    this.verifyToken(token);
+                }
+            }
+
+            async verifyToken(token) {
+                try {
+                    console.log('Verifying existing token...');
+                    const response = await fetch('/api/auth/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    // Check if response is JSON for successful responses
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            console.warn('Token verification returned non-JSON response');
+                            this.clearAuthData();
+                            return false;
+                        }
+                    }
+
+                    if (response.ok) {
+                        // Token is valid, redirect to dashboard
+                        console.log('Token is valid, redirecting to dashboard');
+                        this.showAlert('You are already logged in. Redirecting to dashboard...', 'success');
+                        setTimeout(() => {
+                            window.location.replace('/dashboard'); // Use replace to prevent back button issues
+                        }, 1000);
+                        return true;
+                    } else {
+                        // Token is invalid, clear storage
+                        console.log('Token is invalid, clearing auth data');
+                        this.clearAuthData();
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Token verification error:', error);
+                    this.clearAuthData();
+                    return false;
+                }
+            }
+
+            clearAuthData() {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminTokenExpiry');
+                localStorage.removeItem('adminUser');
+            }
+        }
+
+        // Initialize login manager when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new LoginManager();
+        });
+
+        // Add some visual feedback for better UX
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add focus effects
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', () => {
+                    input.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            // Add ripple effect to button
+            const button = document.querySelector('.login-btn');
+            button.addEventListener('click', function(e) {
+                if (this.disabled) return;
+                
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+
+            // Add CSS for ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(2);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

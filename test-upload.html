@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>APK Upload Test</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="apkFile">Select APK File:</label>
+            <input type="file" id="apkFile" name="apkFile" accept=".apk" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="appName">App Name:</label>
+            <input type="text" id="appName" name="appName" placeholder="My App">
+        </div>
+        
+        <div class="form-group">
+            <label for="version">Version:</label>
+            <input type="text" id="version" name="version" placeholder="1.0.0" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="platform">Platform:</label>
+            <select id="platform" name="platform">
+                <option value="android">Android</option>
+                <option value="ios">iOS</option>
+            </select>
+        </div>
+        
+        <button type="submit">Upload APK</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('apkFile');
+            const appName = document.getElementById('appName').value;
+            const version = document.getElementById('version').value;
+            const platform = document.getElementById('platform').value;
+            
+            if (!fileInput.files[0]) {
+                showResult('Please select a file', 'error');
+                return;
+            }
+            
+            formData.append('apkFile', fileInput.files[0]);
+            formData.append('appName', appName || fileInput.files[0].name);
+            formData.append('version', version);
+            formData.append('platform', platform);
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Uploading...</p>';
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult(`Upload successful! File ID: ${result.data.gridfsFileId}`, 'success');
+                } else {
+                    showResult(`Upload failed: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(`Upload error: ${error.message}`, 'error');
+            }
+        });
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+services:
+  - type: web
+    name: link-server
+    env: node
+    plan: starter # Change to 'standard' or 'pro' for production
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        fromService:
+          type: web
+          name: link-server
+          property: port
+      # Update Management Configuration
+      - key: MAX_FILE_SIZE
+        value: "104857600" # 100MB in bytes
+      - key: RATE_LIMIT_WINDOW
+        value: "900000" # 15 minutes in milliseconds
+      - key: RATE_LIMIT_MAX
+        value: "50" # Stricter rate limiting for production
+      - key: REQUIRE_DEVICE_REGISTRATION
+        value: "true" # Enable device registration in production
+      - key: ENABLE_ANALYTICS
+        value: "true"
+      # Store URLs (Replace with your actual URLs)
+      - key: IOS_APP_STORE_URL
+        value: "https://apps.apple.com/app/id123456789"
+      - key: ANDROID_PLAY_STORE_URL
+        value: "https://play.google.com/store/apps/details?id=com.yourapp"
+      - key: IOS_APP_STORE_ID
+        value: "123456789"
+      # CORS Configuration (Add your domains)
+      - key: CORS_ORIGINS
+        value: "https://yourdomain.com,https://www.yourdomain.com"
+      # Trusted Proxies (Render's proxy)
+      - key: TRUSTED_PROXIES
+        value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      # Admin Authentication Configuration
+      - key: ADMIN_USERNAME
+        value: "admin@brighthex.in"
+      - key: ADMIN_PASSWORD
+        value: "$2b$12$YourHashedPasswordHere"
+      - key: JWT_SECRET
+        value: "your-super-secret-jwt-key-change-in-production-render-2024"
+      - key: JWT_EXPIRES_IN
+        value: "24h"
+      - key: SESSION_TIMEOUT
+        value: "86400000"
+      - key: MAX_LOGIN_ATTEMPTS
+        value: "5"
+      - key: LOCKOUT_DURATION
+        value: "900000"
+      # MongoDB Atlas Configuration
+      - key: MONGODB_URI
+        value: "mongodb+srv://brighthex28_db_user:paxb1lgQ9oT4Wrob@cluster0.lzhww6m.mongodb.net/linkserver?retryWrites=true&w=majority&appName=Cluster0"
+      - key: MONGODB_DB_NAME
+        value: "linkserver"
+      # Base URL Override (optional - will be auto-detected if not set)
+      # - key: BASE_URL
+      #   value: "https://your-app-name.onrender.com"
+    # Health check configuration
+    healthCheckPath: /health
+    # Auto-deploy from main branch
+    autoDeploy: true
+    # Disk storage for uploaded files
+    disk:
+      name: uploads-disk
+      mountPath: /opt/render/project/src/uploads
+      sizeGB: 1 # 1GB storage for APK files
+    # Custom domains (optional)
+    # domains:
+    #   - yourdomain.com
+    #   - www.yourdomain.com

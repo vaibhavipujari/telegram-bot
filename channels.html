@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Management - Link Server</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradient 3s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .actions-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .create-channel-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .quick-actions {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-icon {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .action-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .channels-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .channels-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+            width: 250px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .channel-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .channel-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.2em;
+        }
+
+        .channel-username {
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .channel-id {
+            color: #666;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .channel-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .channel-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.2em;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .channel-link {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .channel-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .empty-desc {
+            margin-bottom: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .actions-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .channels-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .nav-buttons {
+                position: static;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            
+            .channel-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="nav-buttons">
+                <a href="/dashboard" class="nav-btn">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="/upload" class="nav-btn">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Upload
+                </a>
+                <button class="nav-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+            <h1><i class="fas fa-broadcast-tower"></i> Channel Management</h1>
+            <p>Create and manage download channels for your applications</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="main-content">
+            <!-- Statistics Section -->
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <div class="stat-number" id="totalChannels">0</div>
+                    <div class="stat-label">Total Channels</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stat-number" id="activeChannels">0</div>
+                    <div class="stat-label">Active Channels</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="stat-number" id="totalDownloads">0</div>
+                    <div class="stat-label">Total Downloads</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-number" id="todayDownloads">0</div>
+                    <div class="stat-label">Today's Downloads</div>
+                </div>
+            </div>
+
+            <!-- Actions Section -->
+            <div class="actions-section">
+                <!-- Create Channel Form -->
+                <div class="create-channel-section">
+                    <div class="section-title">
+                        <i class="fas fa-plus-circle"></i>
+                        Create New Channel
+                    </div>
+                    
+                    <form id="createChannelForm">
+                        <div class="form-group">
+                            <label for="channelId">Channel ID *</label>
+                            <input type="text" id="channelId" class="form-control" placeholder="e.g., @mychannel or -1001234567890" required>
+                            <div class="form-help">Telegram channel ID or username (with @)</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="channelName">Channel Name *</label>
+                            <input type="text" id="channelName" class="form-control" placeholder="e.g., My App Channel" required>
+                            <div class="form-help">Display name for the channel</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="channelUsername">Channel Username</label>
+                            <input type="text" id="channelUsername" class="form-control" placeholder="e.g., myappchannel">
+                            <div class="form-help">Optional: Channel username without @</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="channelDescription">Description</label>
+                            <textarea id="channelDescription" class="form-control" rows="3" placeholder="Optional description for the channel"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="createBtn">
+                            <i class="fas fa-plus"></i>
+                            Create Channel
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <div class="section-title">
+                        <i class="fas fa-bolt"></i>
+                        Quick Actions
+                    </div>
+                    
+                    <div class="action-grid">
+                        <div class="action-card" onclick="bulkToggleChannels(true)">
+                            <div class="action-icon">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="action-title">Enable All</div>
+                            <div class="action-desc">Activate all channels</div>
+                        </div>
+
+                        <div class="action-card" onclick="bulkToggleChannels(false)">
+                            <div class="action-icon">
+                                <i class="fas fa-pause-circle"></i>
+                            </div>
+                            <div class="action-title">Disable All</div>
+                            <div class="action-desc">Deactivate all channels</div>
+                        </div>
+
+                        <div class="action-card" onclick="exportChannels()">
+                            <div class="action-icon">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <div class="action-title">Export Data</div>
+                            <div class="action-desc">Download channel list</div>
+                        </div>
+
+                        <div class="action-card" onclick="showImportModal()">
+                            <div class="action-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <div class="action-title">Import Channels</div>
+                            <div class="action-desc">Bulk import from file</div>
+                        </div>
+
+                        <div class="action-card" onclick="testAllChannels()">
+                            <div class="action-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="action-title">Test All</div>
+                            <div class="action-desc">Verify all channels</div>
+                        </div>
+
+                        <div class="action-card" onclick="showAnalytics()">
+                            <div class="action-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="action-title">Analytics</div>
+                            <div class="action-desc">View detailed stats</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Channels List Section -->
+            <div class="channels-section">
+                <div class="channels-header">
+                    <div class="section-title">
+                        <i class="fas fa-list"></i>
+                        Channels List
+                        <button class="btn btn-secondary btn-sm" onclick="loadChannels()" style="margin-left: 15px;">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                    </div>
+                    
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" id="searchChannels" class="form-control" placeholder="Search channels...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <select id="filterStatus" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active Only</option>
+                            <option value="inactive">Inactive Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="channels-grid" id="channelsList">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <div class="empty-title">Loading Channels...</div>
+                        <div class="empty-desc">Please wait while we fetch your channels</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3>Processing...</h3>
+            <p id="loadingText">Please wait while we process your request</p>
+        </div>
+    </div>
+
+    <!-- Channel Details Modal -->
+    <div id="channelModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Channel Details</h2>
+                <span class="close" onclick="closeModal('channelModal')">&times;</span>
+            </div>
+            <div id="modalContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Import Channels</h2>
+                <span class="close" onclick="closeModal('importModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Upload a JSON file with channel data:</p>
+                <input type="file" id="importFile" accept=".json" class="form-control" style="margin: 15px 0;">
+                <div class="form-help">
+                    Expected format: [{"channelId": "...", "channelName": "...", "channelUsername": "..."}]
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="importChannels()">
+                        <i class="fas fa-upload"></i>
+                        Import
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal('importModal')">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication management
+        class AuthManager {
+            static getToken() {
+                return localStorage.getItem('adminToken');
+            }
+            
+            static getTokenExpiry() {
+                return localStorage.getItem('adminTokenExpiry');
+            }
+            
+            static isAuthenticated() {
+                const token = this.getToken();
+                const expiry = this.getTokenExpiry();
+                
+                if (!token || !expiry) return false;
+                
+                if (Date.now() >= parseInt(expiry)) {
+                    this.clearAuth();
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            static clearAuth() {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminTokenExpiry');
+                localStorage.removeItem('adminUser');
+            }
+            
+            static redirectToLogin() {
+                window.location.href = '/login';
+            }
+            
+            static getAuthHeaders() {
+                const token = this.getToken();
+                return token ? {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                } : {
+                    'Content-Type': 'application/json'
+                };
+            }
+        }
+
+        // Global variables
+        let allChannels = [];
+        let filteredChannels = [];
+
+        // Utility functions
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            
+            alertContainer.appendChild(alert);
+            alert.style.display = 'flex';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function showLoading(text = 'Processing...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // API functions
+        async function apiCall(url, options = {}) {
+            const defaultOptions = {
+                headers: AuthManager.getAuthHeaders()
+            };
+            
+            const response = await fetch(url, { ...defaultOptions, ...options });
+            
+            if (response.status === 401 || response.status === 403) {
+                AuthManager.clearAuth();
+                AuthManager.redirectToLogin();
+                return null;
+            }
+            
+            return response;
+        }
+
+        // Channel management functions
+        async function loadChannels() {
+            try {
+                showLoading('Loading channels...');
+                
+                const response = await apiCall('/api/channels');
+                if (!response) return;
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    allChannels = data.channels || [];
+                    filteredChannels = [...allChannels];
+                    displayChannels();
+                    updateStats();
+                } else {
+                    showAlert(data.message || 'Failed to load channels', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading channels:', error);
+                showAlert('Error loading channels: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayChannels() {
+            const channelsList = document.getElementById('channelsList');
+            
+            if (!filteredChannels || filteredChannels.length === 0) {
+                channelsList.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-icon">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </div>
+                        <div class="empty-title">No Channels Found</div>
+                        <div class="empty-desc">Create your first channel to get started</div>
+                        <button class="btn btn-primary" onclick="document.getElementById('channelId').focus()">
+                            <i class="fas fa-plus"></i>
+                            Create Channel
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            channelsList.innerHTML = filteredChannels.map(channel => `
+                <div class="channel-card">
+                    <div class="channel-header">
+                        <div class="channel-info">
+                            <h3>${channel.channelName}</h3>
+                            ${channel.channelUsername ? `<div class="channel-username">@${channel.channelUsername}</div>` : ''}
+                            <div class="channel-id">ID: ${channel.channelId}</div>
+                        </div>
+                        <div class="channel-status ${channel.isActive ? 'status-active' : 'status-inactive'}">
+                            ${channel.isActive ? 'Active' : 'Inactive'}
+                        </div>
+                    </div>
+                    
+                    <div class="channel-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">${channel.downloadCount || 0}</span>
+                            <div class="stat-label">Downloads</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${formatDate(channel.createdAt)}</span>
+                            <div class="stat-label">Created</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${channel.lastAccessedAt ? formatDate(channel.lastAccessedAt) : 'Never'}</span>
+                            <div class="stat-label">Last Used</div>
+                        </div>
+                    </div>
+                    
+                    <div class="channel-link">
+                        ${getBaseUrl()}/d/${channel.downloadToken}
+                        <button class="copy-btn" onclick="copyToClipboard('${getBaseUrl()}/d/${channel.downloadToken}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="channel-actions">
+                        <button class="btn btn-primary btn-sm" onclick="copyToClipboard('${getBaseUrl()}/d/${channel.downloadToken}')">
+                            <i class="fas fa-copy"></i>
+                            Copy Link
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="testChannel('${channel.downloadToken}')">
+                            <i class="fas fa-external-link-alt"></i>
+                            Test
+                        </button>
+                        <button class="btn btn-${channel.isActive ? 'warning' : 'success'} btn-sm" onclick="toggleChannel('${channel.downloadToken}')">
+                            <i class="fas fa-${channel.isActive ? 'pause' : 'play'}"></i>
+                            ${channel.isActive ? 'Disable' : 'Enable'}
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="showChannelDetails('${channel.downloadToken}')">
+                            <i class="fas fa-info-circle"></i>
+                            Details
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteChannel('${channel.downloadToken}')">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const totalChannels = allChannels.length;
+            const activeChannels = allChannels.filter(c => c.isActive).length;
+            const totalDownloads = allChannels.reduce((sum, c) => sum + (c.downloadCount || 0), 0);
+            
+            // Calculate today's downloads (mock data for now)
+            const todayDownloads = Math.floor(totalDownloads * 0.1);
+            
+            document.getElementById('totalChannels').textContent = totalChannels;
+            document.getElementById('activeChannels').textContent = activeChannels;
+            document.getElementById('totalDownloads').textContent = totalDownloads;
+            document.getElementById('todayDownloads').textContent = todayDownloads;
+        }
+
+        async function createChannel(channelData) {
+            try {
+                showLoading('Creating channel...');
+                
+                const response = await apiCall('/api/channels', {
+                    method: 'POST',
+                    body: JSON.stringify(channelData)
+                });
+                
+                if (!response) return;
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Channel created successfully!', 'success');
+                    document.getElementById('createChannelForm').reset();
+                    await loadChannels();
+                } else {
+                    showAlert(data.message || 'Failed to create channel', 'error');
+                }
+            } catch (error) {
+                showAlert('Error creating channel: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function toggleChannel(token) {
+            try {
+                const response = await apiCall(`/api/channels/${token}/toggle`, {
+                    method: 'PUT'
+                });
+                
+                if (!response) return;
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    await loadChannels();
+                } else {
+                    showAlert(data.message || 'Failed to toggle channel', 'error');
+                }
+            } catch (error) {
+                showAlert('Error toggling channel: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteChannel(token) {
+            if (!confirm('Are you sure you want to delete this channel? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                showLoading('Deleting channel...');
+                
+                const response = await apiCall(`/api/channels/${token}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response) return;
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Channel deleted successfully!', 'success');
+                    await loadChannels();
+                } else {
+                    showAlert(data.message || 'Failed to delete channel', 'error');
+                }
+            } catch (error) {
+                showAlert('Error deleting channel: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Utility functions
+        function getBaseUrl() {
+            return window.location.origin;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('Link copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showAlert('Link copied to clipboard!', 'success');
+            });
+        }
+
+        function testChannel(token) {
+            const url = `${getBaseUrl()}/d/${token}`;
+            window.open(url, '_blank');
+        }
+
+        function showChannelDetails(token) {
+            const channel = allChannels.find(c => c.downloadToken === token);
+            if (!channel) return;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h4>Channel Information</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 10px; font-weight: 600;">Name:</td>
+                            <td style="padding: 10px;">${channel.channelName}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 10px; font-weight: 600;">ID:</td>
+                            <td style="padding: 10px;">${channel.channelId}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 10px; font-weight: 600;">Username:</td>
+                            <td style="padding: 10px;">${channel.channelUsername || 'Not set'}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 10px; font-weight: 600;">Status:</td>
+                            <td style="padding: 10px;">
+                                <span class="channel-status ${channel.isActive ? 'status-active' : 'status-inactive'}">
+                                    ${channel.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 10px; font-weight: 600;">Downloads:</td>
+                            <td style="padding: 10px;">${channel.downloadCount || 0}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 10px; font-weight: 600;">Created:</td>
+                            <td style="padding: 10px;">${new Date(channel.createdAt).toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; font-weight: 600;">Last Access:</td>
+                            <td style="padding: 10px;">${channel.lastAccessedAt ? new Date(channel.lastAccessedAt).toLocaleString() : 'Never'}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>Download Link</h4>
+                    <div class="channel-link">
+                        ${getBaseUrl()}/d/${channel.downloadToken}
+                        <button class="copy-btn" onclick="copyToClipboard('${getBaseUrl()}/d/${channel.downloadToken}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button class="btn btn-primary" onclick="testChannel('${channel.downloadToken}')">
+                        <i class="fas fa-external-link-alt"></i>
+                        Test Channel
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal('channelModal')">
+                        Close
+                    </button>
+                </div>
+            `;
+            
+            showModal('channelModal');
+        }
+
+        // Search and filter functions
+        function filterChannels() {
+            const searchTerm = document.getElementById('searchChannels').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+            
+            filteredChannels = allChannels.filter(channel => {
+                const matchesSearch = !searchTerm || 
+                    channel.channelName.toLowerCase().includes(searchTerm) ||
+                    channel.channelId.toLowerCase().includes(searchTerm) ||
+                    (channel.channelUsername && channel.channelUsername.toLowerCase().includes(searchTerm));
+                
+                const matchesStatus = !statusFilter || 
+                    (statusFilter === 'active' && channel.isActive) ||
+                    (statusFilter === 'inactive' && !channel.isActive);
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            displayChannels();
+        }
+
+        // Bulk operations
+        async function bulkToggleChannels(enable) {
+            const action = enable ? 'enable' : 'disable';
+            if (!confirm(`Are you sure you want to ${action} all channels?`)) return;
+            
+            showLoading(`${enable ? 'Enabling' : 'Disabling'} all channels...`);
+            
+            const promises = allChannels
+                .filter(channel => channel.isActive !== enable)
+                .map(channel => toggleChannel(channel.downloadToken));
+            
+            try {
+                await Promise.all(promises);
+                showAlert(`All channels ${enable ? 'enabled' : 'disabled'} successfully!`, 'success');
+            } catch (error) {
+                showAlert(`Error during bulk operation: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function exportChannels() {
+            const dataStr = JSON.stringify(allChannels, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `channels_export_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showAlert('Channels exported successfully!', 'success');
+        }
+
+        function showImportModal() {
+            showModal('importModal');
+        }
+
+        async function importChannels() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showAlert('Please select a file to import', 'error');
+                return;
+            }
+            
+            try {
+                showLoading('Importing channels...');
+                
+                const text = await file.text();
+                const channels = JSON.parse(text);
+                
+                if (!Array.isArray(channels)) {
+                    throw new Error('Invalid file format. Expected an array of channels.');
+                }
+                
+                let successCount = 0;
+                let errorCount = 0;
+                
+                for (const channelData of channels) {
+                    try {
+                        const response = await apiCall('/api/channels', {
+                            method: 'POST',
+                            body: JSON.stringify(channelData)
+                        });
+                        
+                        if (response && response.ok) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    } catch (error) {
+                        errorCount++;
+                    }
+                }
+                
+                closeModal('importModal');
+                showAlert(`Import completed: ${successCount} successful, ${errorCount} failed`, successCount > 0 ? 'success' : 'warning');
+                
+                if (successCount > 0) {
+                    await loadChannels();
+                }
+                
+            } catch (error) {
+                showAlert('Error importing channels: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function testAllChannels() {
+            showLoading('Testing all channels...');
+            
+            let successCount = 0;
+            let errorCount = 0;
+            
+            for (const channel of allChannels) {
+                try {
+                    const response = await fetch(`${getBaseUrl()}/d/${channel.downloadToken}`, { method: 'HEAD' });
+                    if (response.ok) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                    }
+                } catch (error) {
+                    errorCount++;
+                }
+            }
+            
+            hideLoading();
+            showAlert(`Test completed: ${successCount} working, ${errorCount} failed`, successCount > errorCount ? 'success' : 'warning');
+        }
+
+        function showAnalytics() {
+            // This would open a detailed analytics view
+            showAlert('Analytics feature coming soon!', 'info');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            if (!AuthManager.isAuthenticated()) {
+                AuthManager.redirectToLogin();
+                return;
+            }
+            
+            // Load initial data
+            await loadChannels();
+            
+            // Form submission
+            document.getElementById('createChannelForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const channelData = {
+                    channelId: document.getElementById('channelId').value.trim(),
+                    channelName: document.getElementById('channelName').value.trim(),
+                    channelUsername: document.getElementById('channelUsername').value.trim() || null,
+                    description: document.getElementById('channelDescription').value.trim() || null
+                };
+                
+                await createChannel(channelData);
+            });
+            
+            // Search and filter
+            document.getElementById('searchChannels').addEventListener('input', filterChannels);
+            document.getElementById('filterStatus').addEventListener('change', filterChannels);
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                try {
+                    await apiCall('/api/auth/logout', { method: 'POST' });
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+                
+                AuthManager.clearAuth();
+                AuthManager.redirectToLogin();
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram APK Download Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0088cc 0%, #229ed9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #0088cc, #229ed9);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .telegram-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #0088cc;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .actions {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #0088cc;
+        }
+        
+        .section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.3em;
+        }
+        
+        .btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: #0077b3;
+        }
+        
+        .btn-danger {
+            background: #f44336;
+        }
+        
+        .btn-danger:hover {
+            background: #da190b;
+        }
+        
+        .btn-success {
+            background: #4CAF50;
+        }
+        
+        .btn-success:hover {
+            background: #45a049;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #0088cc;
+        }
+        
+        .response {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .response.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .response.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .channel-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .channel-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .channel-icon {
+            width: 40px;
+            height: 40px;
+            background: #0088cc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .channel-info h4 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .channel-info p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .channel-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .download-link {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        
+        .copy-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .copy-btn:hover {
+            background: #545b62;
+        }
+        
+        .status-active {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-inactive {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        /* Update Management Styles */
+        .update-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover {
+            color: #0088cc;
+            background: #f8f9fa;
+        }
+        
+        .tab-btn.active {
+            color: #0088cc;
+            border-bottom-color: #0088cc;
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row select, .form-row input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .device-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .device-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .device-platform {
+            background: #0088cc;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .device-info {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0;
+        }
+        
+        .analytics-controls {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .analytics-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .analytics-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0088cc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .analytics-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0088cc;
+        }
+        
+        .analytics-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .event-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .event-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .event-item:last-child {
+            border-bottom: none;
+        }
+        
+        .event-type {
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .event-type.version_check { background: #d1ecf1; color: #0c5460; }
+        .event-type.download_start { background: #fff3cd; color: #856404; }
+        .event-type.download_complete { background: #d4edda; color: #155724; }
+        .event-type.download_error { background: #f8d7da; color: #721c24; }
+        .event-type.update_complete { background: #d1ecf1; color: #0c5460; }
+        .event-type.device_register { background: #e2e3e5; color: #383d41; }
+        .event-type.notification_sent { background: #fce4ec; color: #880e4f; }
+        
+        .event-details {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .event-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .metadata-display {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .metadata-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metadata-item:last-child {
+            border-bottom: none;
+        }
+        
+        .metadata-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .metadata-value {
+            color: #666;
+            word-break: break-all;
+        }
+        
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="telegram-icon">📱</div>
+            <h1>Telegram APK Download Center</h1>
+            <p>Manage APK downloads for multiple Telegram channels</p>
+        </div>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalDownloads">-</div>
+                <div class="stat-label">Total Downloads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeChannels">-</div>
+                <div class="stat-label">Active Channels</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="appVersion">-</div>
+                <div class="stat-label">Current Version</div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <div class="section">
+                <h3>📤 Upload APK</h3>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="apkFile">Select APK File:</label>
+                        <input type="file" id="apkFile" name="apkFile" accept=".apk" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appName">App Name:</label>
+                        <input type="text" id="appName" name="appName" placeholder="My Awesome App">
+                    </div>
+                    <div class="form-group">
+                        <label for="version">Version:</label>
+                        <input type="text" id="version" name="version" placeholder="1.0.0">
+                    </div>
+                    <button type="submit" class="btn btn-success">Upload APK</button>
+                </form>
+                <div id="uploadResponse" class="response"></div>
+            </div>
+            
+            <div class="section">
+                <h3>📢 Add Telegram Channel</h3>
+                <form id="channelForm">
+                    <div class="form-group">
+                        <label for="channelId">Channel ID:</label>
+                        <input type="text" id="channelId" name="channelId" placeholder="-1001234567890" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="channelName">Channel Name:</label>
+                        <input type="text" id="channelName" name="channelName" placeholder="My Channel" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="channelUsername">Channel Username (optional):</label>
+                        <input type="text" id="channelUsername" name="channelUsername" placeholder="@mychannel">
+                    </div>
+                    <button type="submit" class="btn">Add Channel</button>
+                </form>
+                <div id="channelResponse" class="response"></div>
+            </div>
+            
+            <div class="section">
+                <h3>📋 Telegram Channels & Download Links</h3>
+                <button onclick="loadChannels()" class="btn">Refresh Channels</button>
+                <div id="channelsList" class="channels-grid"></div>
+            </div>
+            
+            <!-- Update Management Section -->
+            <div class="section">
+                <h3>🔄 Update Management Dashboard</h3>
+                <div class="update-tabs">
+                    <button class="tab-btn active" onclick="showTab('version-check')">Version Check</button>
+                    <button class="tab-btn" onclick="showTab('device-management')">Devices</button>
+                    <button class="tab-btn" onclick="showTab('analytics')">Analytics</button>
+                    <button class="tab-btn" onclick="showTab('notifications')">Notifications</button>
+                </div>
+                
+                <!-- Version Check Tab -->
+                <div id="version-check" class="tab-content active">
+                    <h4>📱 Check App Version</h4>
+                    <form id="versionCheckForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="platform">Platform:</label>
+                                <select id="platform" name="platform" required>
+                                    <option value="">Select Platform</option>
+                                    <option value="android">Android</option>
+                                    <option value="ios">iOS</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="currentVersion">Current Version:</label>
+                                <input type="text" id="currentVersion" name="currentVersion" placeholder="1.0.0" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bundleId">Bundle ID:</label>
+                                <input type="text" id="bundleId" name="bundleId" placeholder="com.yourapp" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="deviceId">Device ID (optional):</label>
+                                <input type="text" id="deviceId" name="deviceId" placeholder="unique-device-id">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Check Version</button>
+                    </form>
+                    <div id="versionCheckResponse" class="response"></div>
+                    
+                    <h4>📦 Update Metadata</h4>
+                    <div class="form-row">
+                        <select id="metadataPlatform" onchange="getUpdateMetadata()">
+                            <option value="">Select Platform</option>
+                            <option value="android">Android</option>
+                            <option value="ios">iOS</option>
+                        </select>
+                        <button onclick="getUpdateMetadata()" class="btn">Get Metadata</button>
+                    </div>
+                    <div id="metadataResponse" class="response"></div>
+                </div>
+                
+                <!-- Device Management Tab -->
+                <div id="device-management" class="tab-content">
+                    <h4>📱 Register New Device</h4>
+                    <form id="deviceRegisterForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regDeviceId">Device ID:</label>
+                                <input type="text" id="regDeviceId" name="deviceId" placeholder="unique-device-id" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regPlatform">Platform:</label>
+                                <select id="regPlatform" name="platform" required>
+                                    <option value="">Select Platform</option>
+                                    <option value="android">Android</option>
+                                    <option value="ios">iOS</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regAppVersion">App Version:</label>
+                                <input type="text" id="regAppVersion" name="appVersion" placeholder="1.0.0">
+                            </div>
+                            <div class="form-group">
+                                <label for="osVersion">OS Version:</label>
+                                <input type="text" id="osVersion" name="osVersion" placeholder="13.0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="deviceModel">Device Model:</label>
+                            <input type="text" id="deviceModel" name="deviceModel" placeholder="iPhone 14 Pro">
+                        </div>
+                        <button type="submit" class="btn">Register Device</button>
+                    </form>
+                    <div id="deviceRegisterResponse" class="response"></div>
+                    
+                    <h4>📋 Registered Devices</h4>
+                    <div class="form-row">
+                        <select id="deviceFilterPlatform">
+                            <option value="">All Platforms</option>
+                            <option value="android">Android</option>
+                            <option value="ios">iOS</option>
+                        </select>
+                        <button onclick="loadDevices()" class="btn">Load Devices</button>
+                    </div>
+                    <div id="devicesList" class="devices-grid"></div>
+                </div>
+                
+                <!-- Analytics Tab -->
+                <div id="analytics" class="tab-content">
+                    <h4>📊 Update Analytics</h4>
+                    <div class="analytics-controls">
+                        <div class="form-row">
+                            <select id="analyticsEventType">
+                                <option value="">All Events</option>
+                                <option value="version_check">Version Check</option>
+                                <option value="download_start">Download Start</option>
+                                <option value="download_complete">Download Complete</option>
+                                <option value="download_error">Download Error</option>
+                                <option value="update_complete">Update Complete</option>
+                                <option value="device_register">Device Register</option>
+                                <option value="notification_sent">Notification Sent</option>
+                            </select>
+                            <select id="analyticsPlatform">
+                                <option value="">All Platforms</option>
+                                <option value="android">Android</option>
+                                <option value="ios">iOS</option>
+                            </select>
+                            <input type="number" id="analyticsLimit" placeholder="Limit (default: 100)" min="1" max="1000">
+                            <button onclick="loadAnalytics()" class="btn">Load Analytics</button>
+                        </div>
+                    </div>
+                    <div id="analyticsResults"></div>
+                </div>
+                
+                <!-- Notifications Tab -->
+                <div id="notifications" class="tab-content">
+                    <h4>📢 Send Update Notifications</h4>
+                    <form id="notificationForm">
+                        <div class="form-group">
+                            <label for="notificationTitle">Title:</label>
+                            <input type="text" id="notificationTitle" name="title" placeholder="App Update Available" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationBody">Message:</label>
+                            <textarea id="notificationBody" name="message" placeholder="A new version of the app is ready to install" rows="3" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="notificationPlatform">Platform:</label>
+                                <select id="notificationPlatform" name="platform">
+                                    <option value="">All Platforms</option>
+                                    <option value="android">Android</option>
+                                    <option value="ios">iOS</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="updateVersion">Update Version:</label>
+                                <input type="text" id="updateVersion" name="version" placeholder="1.1.0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="deviceIds">Device IDs (comma-separated):</label>
+                            <textarea id="deviceIds" name="deviceIds" placeholder="device1,device2,device3 or leave empty to send to all" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Send Notifications</button>
+                    </form>
+                    <div id="notificationResponse" class="response"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load initial data and initialize forms
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadChannels();
+            
+            // Initialize all form handlers
+            initVersionCheckForm();
+            initDeviceRegisterForm();
+            initNotificationForm();
+            
+            // Initialize event delegation for dynamic buttons
+            initEventDelegation();
+        });
+        
+        function loadStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalDownloads').textContent = data.totalDownloads;
+                    document.getElementById('activeChannels').textContent = data.activeChannels;
+                    document.getElementById('appVersion').textContent = data.appVersion;
+                })
+                .catch(err => console.error('Error loading stats:', err));
+        }
+        
+        function loadChannels() {
+            fetch('/api/channels')
+                .then(response => response.json())
+                .then(data => {
+                    const channelsList = document.getElementById('channelsList');
+                    channelsList.innerHTML = '';
+                    
+                    data.channels.forEach(channel => {
+                        const channelCard = createChannelCard(channel);
+                        channelsList.appendChild(channelCard);
+                    });
+                })
+                .catch(err => console.error('Error loading channels:', err));
+        }
+        
+        function createChannelCard(channel) {
+            const card = document.createElement('div');
+            card.className = 'channel-card';
+            
+            const downloadUrl = window.location.origin + '/d/' + channel.downloadToken;
+            
+            card.innerHTML = 
+                '<div class="channel-header">' +
+                    '<div class="channel-icon">' + channel.channelName.charAt(0).toUpperCase() + '</div>' +
+                    '<div class="channel-info">' +
+                        '<h4>' + channel.channelName + '</h4>' +
+                        '<p>ID: ' + channel.channelId + '</p>' +
+                        (channel.channelUsername ? '<p>' + channel.channelUsername + '</p>' : '') +
+                    '</div>' +
+                '</div>' +
+                
+                '<div class="channel-stats">' +
+                    '<span>Downloads: <strong>' + channel.downloadCount + '</strong></span>' +
+                    '<span class="' + (channel.isActive ? 'status-active' : 'status-inactive') + '">' +
+                        (channel.isActive ? 'Active' : 'Inactive') +
+                    '</span>' +
+                '</div>' +
+                
+                '<div class="download-link">' +
+                    downloadUrl +
+                    '<button class="copy-btn" data-url="' + downloadUrl + '">Copy</button>' +
+                '</div>' +
+                
+                '<div style="margin-top: 15px;">' +
+                    '<button class="btn ' + (channel.isActive ? 'btn-danger' : 'btn-success') + ' toggle-channel-btn" ' +
+                            'data-token="' + channel.downloadToken + '">' +
+                        (channel.isActive ? 'Deactivate' : 'Activate') +
+                    '</button>' +
+                    '<button class="btn btn-danger delete-channel-btn" data-token="' + channel.downloadToken + '">' +
+                        'Delete' +
+                    '</button>' +
+                '</div>';
+            
+            return card;
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showTempMessage('Link copied to clipboard!');
+            });
+        }
+        
+        function showTempMessage(message) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000;';
+            msg.textContent = message;
+            document.body.appendChild(msg);
+            setTimeout(() => document.body.removeChild(msg), 3000);
+        }
+        
+        // Event delegation for dynamic buttons
+        function initEventDelegation() {
+            document.addEventListener('click', function(e) {
+                // Copy button handler
+                if (e.target.classList.contains('copy-btn')) {
+                    const url = e.target.getAttribute('data-url');
+                    copyToClipboard(url);
+                }
+                
+                // Toggle channel status button handler
+                if (e.target.classList.contains('toggle-channel-btn')) {
+                    const token = e.target.getAttribute('data-token');
+                    toggleChannelStatus(token);
+                }
+                
+                // Delete channel button handler
+                if (e.target.classList.contains('delete-channel-btn')) {
+                    const token = e.target.getAttribute('data-token');
+                    deleteChannel(token);
+                }
+            });
+        }
+        
+        // Upload form handler
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResponse('uploadResponse', data.message, data.success);
+                if (data.success) {
+                    loadStats();
+                    this.reset();
+                }
+            })
+            .catch(err => {
+                showResponse('uploadResponse', 'Upload failed: ' + err.message, false);
+            });
+        });
+        
+        // Channel form handler
+        document.getElementById('channelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            fetch('/api/channels', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResponse('channelResponse', data.message, data.success);
+                if (data.success) {
+                    loadChannels();
+                    loadStats();
+                    this.reset();
+                }
+            })
+            .catch(err => {
+                showResponse('channelResponse', 'Failed to add channel: ' + err.message, false);
+            });
+        });
+        
+        function toggleChannelStatus(token) {
+            fetch('/api/channels/' + token + '/toggle', { method: 'PUT' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadChannels();
+                        loadStats();
+                    }
+                    showTempMessage(data.message);
+                })
+                .catch(err => {
+                    showTempMessage('Failed to toggle channel status');
+                });
+        }
+        
+        function deleteChannel(token) {
+            if (confirm('Are you sure you want to delete this channel?')) {
+                fetch('/api/channels/' + token, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            loadChannels();
+                            loadStats();
+                        }
+                        showTempMessage(data.message);
+                    })
+                    .catch(err => {
+                        showTempMessage('Failed to delete channel');
+                    });
+            }
+        }
+        
+        function showResponse(elementId, message, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = 'response ' + (isSuccess ? 'success' : 'error');
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Update Management Functions
+        
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Load data for specific tabs
+            if (tabName === 'device-management') {
+                loadDevices();
+            } else if (tabName === 'analytics') {
+                loadAnalytics();
+            }
+        }
+        
+        // Version Check Form Handler
+        function initVersionCheckForm() {
+            const form = document.getElementById('versionCheckForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData);
+                    
+                    fetch('/api/check-version', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            displayVersionCheckResult(data);
+                        } else {
+                            showResponse('versionCheckResponse', data.message, false);
+                        }
+                    })
+                    .catch(err => {
+                        showResponse('versionCheckResponse', 'Version check failed: ' + err.message, false);
+                    });
+                });
+            }
+        }
+        
+        function displayVersionCheckResult(data) {
+            const responseDiv = document.getElementById('versionCheckResponse');
+            responseDiv.className = 'response success metadata-display';
+            responseDiv.style.display = 'block';
+            
+            const updateStatus = data.updateAvailable ? 
+                '<span style="color: #28a745; font-weight: bold;">✅ Update Available</span>' : 
+                '<span style="color: #6c757d;">ℹ️ Up to Date</span>';
+            
+            responseDiv.innerHTML = 
+                '<div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Update Status:</span>' +
+                        '<span class="metadata-value">' + updateStatus + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Current Version:</span>' +
+                        '<span class="metadata-value">' + data.currentVersion + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Latest Version:</span>' +
+                        '<span class="metadata-value">' + data.latestVersion + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Platform:</span>' +
+                        '<span class="metadata-value">' + data.platform + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Bundle ID:</span>' +
+                        '<span class="metadata-value">' + data.bundleId + '</span>' +
+                    '</div>' +
+                    (data.updateAvailable ? 
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Store URL:</span>' +
+                        '<span class="metadata-value">' +
+                            '<a href="' + data.storeUrl + '" target="_blank" class="download-btn">Open Store</a>' +
+                        '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Release Notes:</span>' +
+                        '<span class="metadata-value">' + (data.releaseNotes || 'No release notes available') + '</span>' +
+                    '</div>'
+                    : '') +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Checked At:</span>' +
+                        '<span class="metadata-value">' + new Date(data.timestamp).toLocaleString() + '</span>' +
+                    '</div>' +
+                '</div>';
+        }
+        
+        // Get Update Metadata
+        function getUpdateMetadata() {
+            const platform = document.getElementById('metadataPlatform').value;
+            if (!platform) {
+                showResponse('metadataResponse', 'Please select a platform', false);
+                return;
+            }
+            
+            fetch('/api/updates/' + platform)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayUpdateMetadata(data);
+                    } else {
+                        showResponse('metadataResponse', data.message, false);
+                    }
+                })
+                .catch(err => {
+                    showResponse('metadataResponse', 'Failed to get metadata: ' + err.message, false);
+                });
+        }
+        
+        function displayUpdateMetadata(data) {
+            const responseDiv = document.getElementById('metadataResponse');
+            responseDiv.className = 'response success metadata-display';
+            responseDiv.style.display = 'block';
+            
+            const fileSize = data.fileSize ? (data.fileSize / (1024 * 1024)).toFixed(2) + ' MB' : 'N/A';
+            
+            responseDiv.innerHTML = 
+                '<div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Platform:</span>' +
+                        '<span class="metadata-value">' + data.platform + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Current Version:</span>' +
+                        '<span class="metadata-value">' + data.currentVersion + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">File Size:</span>' +
+                        '<span class="metadata-value">' + fileSize + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Available:</span>' +
+                        '<span class="metadata-value">' + (data.isAvailable ? '✅ Yes' : '❌ No') + '</span>' +
+                    '</div>' +
+                    (data.downloadUrl ? 
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Download:</span>' +
+                        '<span class="metadata-value">' +
+                            '<a href="' + data.downloadUrl + '" class="download-btn">Download Update</a>' +
+                        '</span>' +
+                    '</div>'
+                    : '') +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Release Date:</span>' +
+                        '<span class="metadata-value">' + new Date(data.releaseDate).toLocaleString() + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Release Notes:</span>' +
+                        '<span class="metadata-value">' + data.releaseNotes + '</span>' +
+                    '</div>' +
+                    (data.checksum ? 
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Checksum (MD5):</span>' +
+                        '<span class="metadata-value" style="font-family: monospace; font-size: 12px;">' + data.checksum + '</span>' +
+                    '</div>'
+                    : '') +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Min OS Version:</span>' +
+                        '<span class="metadata-value">' + data.minimumOsVersion + '</span>' +
+                    '</div>' +
+                    '<div class="metadata-item">' +
+                        '<span class="metadata-label">Architectures:</span>' +
+                        '<span class="metadata-value">' + data.supportedArchitectures.join(', ') + '</span>' +
+                    '</div>' +
+                '</div>';
+        }
+        
+        // Device Registration Form Handler
+        function initDeviceRegisterForm() {
+            const form = document.getElementById('deviceRegisterForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData);
+                    
+                    fetch('/api/updates/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showResponse('deviceRegisterResponse', data.message, data.success);
+                        if (data.success) {
+                            this.reset();
+                            loadDevices();
+                        }
+                    })
+                    .catch(err => {
+                        showResponse('deviceRegisterResponse', 'Registration failed: ' + err.message, false);
+                    });
+                });
+            }
+        }
+        
+        // Load Devices
+        function loadDevices() {
+            const platform = document.getElementById('deviceFilterPlatform').value;
+            const url = '/api/devices' + (platform ? '?platform=' + platform : '');
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayDevices(data);
+                    } else {
+                        showTempMessage('Failed to load devices');
+                    }
+                })
+                .catch(err => {
+                    showTempMessage('Failed to load devices: ' + err.message);
+                });
+        }
+        
+        function displayDevices(data) {
+            const devicesList = document.getElementById('devicesList');
+            devicesList.innerHTML = '';
+            
+            if (data.devices.length === 0) {
+                devicesList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No devices registered yet.</p>';
+                return;
+            }
+            
+            data.devices.forEach(device => {
+                const deviceCard = document.createElement('div');
+                deviceCard.className = 'device-card';
+                
+                const lastCheck = new Date(device.lastCheckAt);
+                const isRecent = (Date.now() - lastCheck.getTime()) < 24 * 60 * 60 * 1000;
+                
+                deviceCard.innerHTML = 
+                    '<div class="device-header">' +
+                        '<span class="device-platform">' + device.platform.toUpperCase() + '</span>' +
+                        '<span style="font-size: 12px; color: ' + (isRecent ? '#28a745' : '#6c757d') + ';">' +
+                            (isRecent ? '🟢 Active' : '⚪ Inactive') +
+                        '</span>' +
+                    '</div>' +
+                    '<div class="device-info"><strong>Device ID:</strong> ' + device.deviceId + '</div>' +
+                    '<div class="device-info"><strong>App Version:</strong> ' + device.appVersion + '</div>' +
+                    '<div class="device-info"><strong>OS Version:</strong> ' + device.osVersion + '</div>' +
+                    '<div class="device-info"><strong>Model:</strong> ' + device.deviceModel + '</div>' +
+                    '<div class="device-info"><strong>Updates:</strong> ' + device.updateCount + '</div>' +
+                    '<div class="device-info"><strong>Registered:</strong> ' + new Date(device.registeredAt).toLocaleDateString() + '</div>' +
+                    '<div class="device-info"><strong>Last Check:</strong> ' + lastCheck.toLocaleString() + '</div>';
+                
+                devicesList.appendChild(deviceCard);
+            });
+            
+            // Add summary
+            const summary = document.createElement('div');
+            summary.style.gridColumn = '1 / -1';
+            summary.style.textAlign = 'center';
+            summary.style.padding = '15px';
+            summary.style.background = '#f8f9fa';
+            summary.style.borderRadius = '8px';
+            summary.style.marginTop = '15px';
+            summary.innerHTML = 
+                '<strong>Summary:</strong> ' + 
+                data.summary.totalDevices + ' total devices | ' + 
+                data.summary.recentlyActive + ' active (24h) | ' + 
+                'Android: ' + (data.summary.platforms.android || 0) + ' | ' + 
+                'iOS: ' + (data.summary.platforms.ios || 0);
+            devicesList.appendChild(summary);
+        }
+        
+        // Load Analytics
+        function loadAnalytics() {
+            const eventType = document.getElementById('analyticsEventType').value;
+            const platform = document.getElementById('analyticsPlatform').value;
+            const limit = document.getElementById('analyticsLimit').value || 100;
+            
+            const params = new URLSearchParams();
+            if (eventType) params.append('eventType', eventType);
+            if (platform) params.append('platform', platform);
+            params.append('limit', limit);
+            
+            fetch('/api/analytics/updates?' + params)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayAnalytics(data);
+                    } else {
+                        showTempMessage('Failed to load analytics');
+                    }
+                })
+                .catch(err => {
+                    showTempMessage('Failed to load analytics: ' + err.message);
+                });
+        }
+        
+        function displayAnalytics(data) {
+            const resultsDiv = document.getElementById('analyticsResults');
+            resultsDiv.innerHTML = '';
+            
+            // Summary Cards
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'analytics-summary';
+            summaryDiv.innerHTML = 
+                '<div class="analytics-card">' +
+                    '<div class="analytics-number">' + data.summary.totalEvents + '</div>' +
+                    '<div class="analytics-label">Total Events</div>' +
+                '</div>' +
+                '<div class="analytics-card">' +
+                    '<div class="analytics-number">' + data.registeredDevices + '</div>' +
+                    '<div class="analytics-label">Registered Devices</div>' +
+                '</div>' +
+                '<div class="analytics-card">' +
+                    '<div class="analytics-number">' + Object.keys(data.summary.eventTypes).length + '</div>' +
+                    '<div class="analytics-label">Event Types</div>' +
+                '</div>' +
+                '<div class="analytics-card">' +
+                    '<div class="analytics-number">' + Object.keys(data.summary.platforms).length + '</div>' +
+                    '<div class="analytics-label">Platforms</div>' +
+                '</div>';
+            resultsDiv.appendChild(summaryDiv);
+            
+            // Event Type Breakdown
+            if (Object.keys(data.summary.eventTypes).length > 0) {
+                const breakdownDiv = document.createElement('div');
+                breakdownDiv.innerHTML = '<h4>📊 Event Type Breakdown</h4>';
+                
+                const eventTypesDiv = document.createElement('div');
+                eventTypesDiv.style.display = 'grid';
+                eventTypesDiv.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
+                eventTypesDiv.style.gap = '10px';
+                eventTypesDiv.style.marginBottom = '20px';
+                
+                Object.entries(data.summary.eventTypes).forEach(([type, count]) => {
+                    const typeCard = document.createElement('div');
+                    typeCard.style.background = 'white';
+                    typeCard.style.padding = '10px';
+                    typeCard.style.borderRadius = '6px';
+                    typeCard.style.border = '1px solid #ddd';
+                    typeCard.innerHTML = 
+                        '<span class="event-type ' + type + '">' + type.replace('_', ' ') + '</span>' +
+                        '<div style="font-size: 18px; font-weight: bold; margin-top: 5px;">' + count + '</div>';
+                    eventTypesDiv.appendChild(typeCard);
+                });
+                
+                breakdownDiv.appendChild(eventTypesDiv);
+                resultsDiv.appendChild(breakdownDiv);
+            }
+            
+            // Recent Events
+            if (data.events.length > 0) {
+                const eventsDiv = document.createElement('div');
+                eventsDiv.innerHTML = '<h4>📋 Recent Events</h4>';
+                
+                const eventsList = document.createElement('div');
+                eventsList.className = 'event-list';
+                
+                data.events.forEach(event => {
+                    const eventItem = document.createElement('div');
+                    eventItem.className = 'event-item';
+                    
+                    const eventTime = new Date(event.timestamp).toLocaleString();
+                    
+                    eventItem.innerHTML = 
+                        '<div>' +
+                            '<span class="event-type ' + event.eventType + '">' + event.eventType.replace('_', ' ') + '</span>' +
+                            '<div class="event-details">' +
+                                'Device: ' + event.deviceId + ' | ' + 
+                                'Platform: ' + event.platform + ' | ' + 
+                                'Version: ' + event.version +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="event-time">' + eventTime + '</div>';
+                    
+                    eventsList.appendChild(eventItem);
+                });
+                
+                eventsDiv.appendChild(eventsList);
+                resultsDiv.appendChild(eventsDiv);
+            } else {
+                const noEventsDiv = document.createElement('div');
+                noEventsDiv.style.textAlign = 'center';
+                noEventsDiv.style.padding = '20px';
+                noEventsDiv.style.color = '#666';
+                noEventsDiv.innerHTML = '<p>No events found matching the selected criteria.</p>';
+                resultsDiv.appendChild(noEventsDiv);
+            }
+        }
+        
+        // Notification Form Handler
+        function initNotificationForm() {
+            const form = document.getElementById('notificationForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData);
+                    
+                    // Parse device IDs
+                    const deviceIdsText = data.deviceIds.trim();
+                    let deviceIds = [];
+                    
+                    if (deviceIdsText) {
+                        deviceIds = deviceIdsText.split(',').map(id => id.trim()).filter(id => id);
+                    } else {
+                        // If no device IDs specified, we'll send to all devices
+                        // In a real implementation, you'd fetch all device IDs
+                        deviceIds = ['all']; // Placeholder
+                    }
+                    
+                    const notificationData = {
+                        deviceIds: deviceIds,
+                        title: data.title,
+                        message: data.message,
+                        platform: data.platform || undefined,
+                        updateInfo: {
+                            version: data.version || undefined
+                        }
+                    };
+                    
+                    fetch('/api/notifications/update', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(notificationData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showResponse('notificationResponse', data.message, data.success);
+                        if (data.success) {
+                            this.reset();
+                        }
+                    })
+                    .catch(err => {
+                        showResponse('notificationResponse', 'Failed to send notifications: ' + err.message, false);
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>
+  
